@@ -52,7 +52,7 @@ export const Add = (props) => {
         // Here we call the addNote function of services but not store in object.
         // Bcz we made an another function to getNotes() which called at NotePage.jsx
         noteOperations.addNote(idValue, titleValue, descrValue, date, colorValue);
-        props.fn(); // This calling show that we call getNotes() when noteObject added.
+        // props.fn(); // This calling show that we call getNotes() when noteObject added.
     }
     
     return(

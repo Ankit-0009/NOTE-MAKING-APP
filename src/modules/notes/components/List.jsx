@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import { noteOperations } from '../../services/note-operations';
 export const List = (props) => {
 
     // This is styled table block of code.
@@ -33,7 +34,7 @@ export const List = (props) => {
 
     return(
         <div>
-            <h1>Total Records : {props.note.length}</h1>
+            <h1>Total Records : {noteOperations.getNotes().length}</h1>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -47,7 +48,7 @@ export const List = (props) => {
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.note.map((note) => (
+                    {noteOperations.getNotes().map((note) => (
                         <StyledTableRow key={note.id}>
                             <StyledTableCell component="th" scope="row">
                                 {note.id}
