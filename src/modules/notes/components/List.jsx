@@ -9,7 +9,23 @@ import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { noteOperations } from '../../services/note-operations';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { getTotalRecords } from '../redux/note-slice';
 export const List = (props) => {
+
+    const dispatch = useDispatch(); // Hook jo data le kr aaega from note-slice.js
+    const noteObject = useSelector(state => {
+        return {'notes':state.noteSlice.notes, 'total':state.noteSlice.total};
+    }); // Pull
+    // Component (HTML page) mount(jab page pr aaega).
+    // Life Cycle Methods
+    // There are many hook for life cycle. 
+    // It is called useEffect.
+    useEffect(() => {
+      // Component Mount
+      dispatch(getTotalRecords()) // Push
+    }, []);
 
     // This is styled table block of code.
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -34,7 +50,7 @@ export const List = (props) => {
 
     return(
         <div>
-            <h1>Total Records : {noteOperations.getNotes().length}</h1>
+            <h1>Total Records : {noteObject.total}</h1>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -48,7 +64,7 @@ export const List = (props) => {
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                    {noteOperations.getNotes().map((note) => (
+                    {noteObject.notes.map((note) => (
                         <StyledTableRow key={note.id}>
                             <StyledTableCell component="th" scope="row">
                                 {note.id}

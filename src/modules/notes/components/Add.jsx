@@ -7,7 +7,6 @@ import TextSnippetSharpIcon from '@mui/icons-material/TextSnippetSharp';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { useRef } from 'react';
-import { noteOperations } from '../../services/note-operations';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -15,6 +14,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useState } from 'react';
 import { MuiColorInput } from 'mui-color-input'
 import dayjs from 'dayjs';
+import { Note } from '../../models/note';
+import { addNote } from '../redux/note-slice';
+import { useDispatch } from 'react-redux';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 export const Add = (props) => {
 
     const id = useRef(); // This holds the current id data.
@@ -25,8 +30,34 @@ export const Add = (props) => {
     const [dateValue, setDateValue] = useState(null);
     const [colorValue, setColorValue] = useState('#ffffff')
 
+    // For SnakBar
+    const [open, setOpen] = useState(false);
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    }
+    const action = (
+        <React.Fragment>
+            <Button color="secondary" size="small" onClick={handleClose}>
+                UNDO
+            </Button>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleClose}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    );
+
+    // Using Dispatch Hook.
+    const Dispatch = useDispatch(); // Retrieve dispatch from useDispatch.
     // Invoke when Add Note button click that written below.
-    const addNote = () => {
+    const takeNote = () => {
         console.log("The note is added...");
         console.log("The ID is : ", id.current.value);
         console.log("The Title is : ", title.current.value);
@@ -44,6 +75,13 @@ export const Add = (props) => {
         const titleValue = title.current.value;
         const descrValue = descr.current.value;
         const date = dateValue ? dayjs(dateValue).format('YYYY-MM-DD') : ''; // If dateValue is null then return empty string.
+
+        const noteObject = new Note(idValue, titleValue, descrValue, date, colorValue);
+        Dispatch(addNote(noteObject));
+
+        // For SnakBar
+        setOpen(true);
+
         // const noteObject = noteOperations.addNote(idValue, titleValue, descrValue, '', '');
 
         // Sending the noteObject to NotePage.jsx using props.
@@ -51,7 +89,7 @@ export const Add = (props) => {
 
         // Here we call the addNote function of services but not store in object.
         // Bcz we made an another function to getNotes() which called at NotePage.jsx
-        noteOperations.addNote(idValue, titleValue, descrValue, date, colorValue);
+        // noteOperations.addNote(idValue, titleValue, descrValue, date, colorValue);
         // props.fn(); // This calling show that we call getNotes() when noteObject added.
     }
     
@@ -63,6 +101,15 @@ export const Add = (props) => {
                     flexDirection : "column",
                     display : "flex"                 
                 }}>
+
+                {/* Here we use SnakBar to show message when Note has added */}
+                <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                    message="Note Added"
+                    action={action}
+                />
 
                 {/* This for the Note - ID */}
                 <TextField
@@ -122,7 +169,7 @@ export const Add = (props) => {
                 <MuiColorInput format="hex" value={colorValue} onChange={(selectedColor) => setColorValue(selectedColor)} />
                     
                 {/* This for the Add Note Button */}
-                <Button onClick={addNote} variant="outlined" color='success'>Add Note</Button>
+                <Button onClick={takeNote} variant="outlined" color='success'>Add Note</Button>
             </Box>
         </>
     )
